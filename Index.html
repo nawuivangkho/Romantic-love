@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love ❤️</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+    font-family: Georgia, serif;
+    background:
+        radial-gradient(circle at 50% 40%, #42152d 0%, #190b19 45%, #080509 100%);
+    color: white;
+    height: 100vh;
+    touch-action: none;
+}
+
+/* Background glow */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(255,70,130,.18), transparent 35%),
+        radial-gradient(circle at 20% 20%, rgba(255,150,190,.08), transparent 25%),
+        radial-gradient(circle at 80% 80%, rgba(150,50,120,.08), transparent 25%);
+    pointer-events: none;
+}
+
+/* Falling hearts */
+.falling-heart {
+    position: fixed;
+    top: -30px;
+    pointer-events: none;
+    animation: fall linear forwards;
+    opacity: .7;
+    z-index: 1;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Main screen */
+#game {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.title {
+    position: absolute;
+    top: 8%;
+    text-align: center;
+    letter-spacing: 2px;
+    font-size: clamp(20px, 5vw, 32px);
+    text-shadow: 0 0 20px rgba(255,80,140,.8);
+}
+
+.subtitle {
+    position: absolute;
+    top: 14%;
+    font-size: 14px;
+    opacity: .75;
+}
+
+/* Target */
+#target {
+    position: absolute;
+    right: 16%;
+    top: 43%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 75px;
+    filter: drop-shadow(0 0 18px rgba(255,50,110,.8));
+    z-index: 5;
+    transition: transform .2s;
+}
+
+#target.hit {
+    animation: explode .7s forwards;
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    30% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* Bow */
+#bow {
+    position: absolute;
+    left: 13%;
+    top: 37%;
+    width: 170px;
+    height: 210px;
+    z-index: 4;
+}
+
+/* curved bow */
+.bow-curve {
+    position: absolute;
+    left: 30px;
+    top: 0;
+    width: 100px;
+    height: 210px;
+    border: 8px solid #dca36a;
+    border-left: none;
+    border-radius: 0 100% 100% 0;
+    transform: rotate(0deg);
+    filter: drop-shadow(0 0 8px rgba(255,190,120,.6));
+}
+
+/* bow string */
+.string {
+    position: absolute;
+    left: 30px;
+    top: 3px;
+    height: 204px;
+    width: 2px;
+    background: #f7d9c0;
+    transform-origin: center;
+}
+
+/* Arrow */
+#arrow {
+    position: absolute;
+    left: 28px;
+    top: 101px;
+    width: 155px;
+    height: 4px;
+    background: #eee;
+    transform-origin: left center;
+    z-index: 6;
+    cursor: grab;
+    filter: drop-shadow(0 0 5px white);
+}
+
+#arrow:after {
+    content: "";
+    position: absolute;
+    right: -2px;
+    top: -6px;
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 17px solid #ddd;
+}
+
+#arrow:before {
+    content: "♥";
+    position: absolute;
+    left: -13px;
+    top: -12px;
+    color: #ff5b91;
+    font-size: 25px;
+}
+
+/* Instructions */
+.instruction {
+    position: absolute;
+    bottom: 10%;
+    text-align: center;
+    font-size: 15px;
+    opacity: .8;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    50% { opacity: .45; }
+}
+
+/* Letter */
+#letterScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background:
+        radial-gradient(circle at center, rgba(90,20,55,.96), rgba(8,4,10,.99));
+    animation: fadeIn 1.5s ease;
+}
+
+#letterScreen.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.letter {
+    max-width: 650px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 35px 28px;
+    text-align: center;
+    border: 1px solid rgba(255,150,190,.35);
+    border-radius: 25px;
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(15px);
+    box-shadow:
+        0 0 50px rgba(255,50,120,.2),
+        inset 0 0 40px rgba(255,100,160,.05);
+}
+
+.letter h1 {
+    font-size: clamp(30px, 8vw, 55px);
+    color: #ff9fbd;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(255,100,150,.7);
+}
+
+.letter h2 {
+    font-size: 23px;
+    margin-bottom: 25px;
+    color: #ffd1df;
+}
+
+.letter p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #ffe9f0;
+}
+
+.signature {
+    margin-top: 30px;
+    font-size: 23px;
+    color: #ff9fbd;
+}
+
+.musicButton {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 200;
+    border: 1px solid rgba(255,255,255,.3);
+    background: rgba(255,255,255,.1);
+    color: white;
+    border-radius: 50px;
+    padding: 10px 16px;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+/* Explosion particles */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 90;
+    font-size: 20px;
+    animation: particle 1.2s ease-out forwards;
+}
+
+@keyframes particle {
+    from {
+        transform: translate(0,0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translate(var(--x),var(--y)) rotate(360deg) scale(.2);
+        opacity: 0;
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    #bow {
+        left: 4%;
+        transform: scale(.78);
+        transform-origin: center;
+    }
+
+    #target {
+        right: 5%;
+        transform: scale(.8);
+    }
+
+    .title {
+        top: 8%;
+    }
+
+    .subtitle {
+        top: 15%;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    .instruction {
+        bottom: 8%;
+        padding: 0 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div class="title">
+        A Little Surprise For You ❤️
+    </div>
+
+    <div class="subtitle">
+        Pull the arrow back... then let it fly.
+    </div>
+
+    <div id="bow">
+        <div class="bow-curve"></div>
+        <div class="string"></div>
+    </div>
+
+    <div id="arrow"></div>
+
+    <div id="target">❤️</div>
+
+    <div class="instruction">
+        🏹 Drag the arrow backward and release
+    </div>
+
+</div>
+
+<div id="letterScreen">
+
+    <div class="letter">
+
+        <h1>My Love ❤️</h1>
+
+        <h2>For My Lindar Baby Boo</h2>
+
+        <p>
+            If you are reading this, it means the arrow found its way
+            straight to the heart... just like you found your way into mine.
+        </p>
+
+        <br>
+
+        <p>
+            I don't know how many times I'll say it,
+            but I'll never get tired of saying it —
+            <b>I love you.</b>
+        </p>
+
+        <br>
+
+        <p>
+            You make ordinary moments feel special,
+            and somehow even the smallest things become memories
+            when they're with you.
+        </p>
+
+        <br>
+
+        <p>
+            No matter where life takes us,
+            I hope we keep choosing each other,
+            laughing together, annoying each other,
+            and making our own little world.
+        </p>
+
+        <div class="signature">
+            Forever yours ❤️<br>
+            <span style="font-size:16px;">Lindar Baby Boo</span>
+        </div>
+
+    </div>
+
+</div>
+
+<button class="musicButton" onclick="toggleMusic()">
+    🎵 Music
+</button>
+
+<audio id="music" loop>
+    <!-- Put your own MP3 URL here -->
+</audio>
+
+<script>
+
+const arrow = document.getElementById("arrow");
+const target = document.getElementById("target");
+const letterScreen = document.getElementById("letterScreen");
+
+let dragging = false;
+let startX = 0;
+let arrowStart = 0;
+
+/* Arrow dragging */
+
+arrow.addEventListener("pointerdown", e => {
+
+    dragging = true;
+    arrow.setPointerCapture(e.pointerId);
+
+    startX = e.clientX;
+    arrowStart = parseFloat(getComputedStyle(arrow).left);
+
+    arrow.style.cursor = "grabbing";
+});
+
+arrow.addEventListener("pointermove", e => {
+
+    if (!dragging) return;
+
+    let movement = e.clientX - startX;
+
+    /* Only pull backwards */
+    let newLeft = arrowStart + movement;
+
+    newLeft = Math.min(newLeft, arrowStart);
+    newLeft = Math.max(newLeft, arrowStart - 100);
+
+    arrow.style.left = newLeft + "px";
+
+    /* Pull string */
+    const string = document.querySelector(".string");
+
+    let pull = arrowStart - newLeft;
+
+    string.style.transform =
+        `translateX(-${pull}px)`;
+});
+
+arrow.addEventListener("pointerup", e => {
+
+    if (!dragging) return;
+
+    dragging = false;
+    arrow.style.cursor = "grab";
+
+    const currentLeft = parseFloat(getComputedStyle(arrow).left);
+
+    let pullDistance = arrowStart - currentLeft;
+
+    /* Need enough pull */
+    if (pullDistance > 45) {
+
+        shootArrow();
+
+    } else {
+
+        resetArrow();
+
+    }
+});
+
+function shootArrow() {
+
+    const targetRect = target.getBoundingClientRect();
+    const arrowRect = arrow.getBoundingClientRect();
+
+    const destination =
+        targetRect.left - arrowRect.right + 20;
+
+    arrow.style.transition =
+        "left .45s cubic-bezier(.2,.8,.2,1)";
+
+    arrow.style.left =
+        (parseFloat(getComputedStyle(arrow).left) + destination) + "px";
+
+    setTimeout(() => {
+
+        target.classList.add("hit");
+
+        createExplosion(
+            targetRect.left + targetRect.width / 2,
+            targetRect.top + targetRect.height / 2
+        );
+
+        setTimeout(() => {
+
+            letterScreen.classList.add("show");
+
+        }, 900);
+
+    }, 450);
+}
+
+function resetArrow() {
+
+    arrow.style.transition = "left .35s ease";
+
+    arrow.style.left = arrowStart + "px";
+
+    document.querySelector(".string").style.transform =
+        "translateX(0)";
+
+    setTimeout(() => {
+
+        arrow.style.transition = "";
+
+    }, 400);
+}
+
+/* Heart explosion */
+
+function createExplosion(x, y) {
+
+    const symbols = ["❤️","💕","💖","💗","✨","💘"];
+
+    for (let i = 0; i < 35; i++) {
+
+        const particle = document.createElement("div");
+
+        particle.className = "particle";
+
+        particle.innerHTML =
+            symbols[Math.floor(Math.random() * symbols.length)];
+
+        particle.style.left = x + "px";
+        particle.style.top = y + "px";
+
+        particle.style.setProperty(
+            "--x",
+            (Math.random() * 500 - 250) + "px"
+        );
+
+        particle.style.setProperty(
+            "--y",
+            (Math.random() * 500 - 250) + "px"
+        );
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 1300);
+    }
+}
+
+/* Falling hearts */
+
+function fallingHeart() {
+
+    const heart = document.createElement("div");
+
+    heart.className = "falling-heart";
+
+    heart.innerHTML =
+        ["❤️","💕","💗","💖","♡"][
+            Math.floor(Math.random() * 5)
+        ];
+
+    heart.style.left =
+        Math.random() * 100 + "vw";
+
+    heart.style.fontSize =
+        (12 + Math.random() * 18) + "px";
+
+    heart.style.animationDuration =
+        (5 + Math.random() * 6) + "s";
+
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 12000);
+}
+
+setInterval(fallingHeart, 500);
+
+/* Music */
+
+const music = document.getElementById("music");
+
+function toggleMusic() {
+
+    if (!music.src) {
+
+        alert(
+            "Add your own MP3 URL inside the <audio> section of the HTML code."
+        );
+
+        return;
+    }
+
+    if (music.paused) {
+        music.play();
+    } else {
+        music.pause();
+    }
+}
+
+</script>
+
+</body>
+</html>
